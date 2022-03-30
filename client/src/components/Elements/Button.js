@@ -1,14 +1,15 @@
 import React from 'react';
 import styled, { css, keyframes } from 'styled-components';
 
-const Button = ({ children, onClick, loading, color }) => {
+const Button = ({ children, onClick, loading, color, bgcolor }) => {
 	// console.log(loading);
 	return (
-		<StyledButton loading={loading} onClick={onClick} color={color}>
+		<StyledButton loading={loading} onClick={onClick} bgcolor={bgcolor} color={color}>
 			<span>{children}</span>
 		</StyledButton>
 	);
 };
+
 
 export default Button;
 
@@ -44,11 +45,11 @@ const StyledButton = styled.button`
 	overflow: hidden;
 	width: 150px;
 	height: 37px;
-	background-color: ${(p) => p.color};
-
-	border: 2px solid #1687a7;
+	background-color: ${(p) => p.bgcolor};
+	font-weight: 50;
+	border: 0px solid #1687a7;
 	border-radius: 2px;
-	color: #1687a7;
+	color: ${(p) => p.color};
 	font-size: 1rem;
 	cursor: pointer;
 	letter-spacing: 0.8px;
@@ -58,6 +59,10 @@ const StyledButton = styled.button`
 	margin: 0 auto;
 	&:active {
 		transform: scale(0.9);
+	}
+	&:hover {
+		transform: translate(2px,2px);
+		
 	}
 
 	& > span {

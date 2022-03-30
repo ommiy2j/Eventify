@@ -8,7 +8,7 @@ const Events = ({ theme }) => {
 		<EventCotainer>
 			<Cover theme={theme}>
 				<EventHEading theme={theme}>Events</EventHEading>
-				<Button children='Create Event' color='#fff' />
+				<Button children='Create Event' color='#fff' bgcolor="#000B49" />
 			</Cover>
 			<AllEvents>
 				<OnGoingEvent>
