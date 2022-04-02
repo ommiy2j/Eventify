@@ -9,17 +9,24 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Route, BrowserRouter as Router, Switch, useHistory } from 'react-router-dom';
 import Events from './components/Events';
+import Bus from './utils/Bus';
+import { Flash } from './components/Flash';
+import Button from './components/Elements/Button';
+import AddEvent from './components/AddEvent/AddEvent';
 
 const App = () => {
+	window.flash = (message, type = 'success') => Bus.emit('flash', { message, type });
+
 	const [ theme, setTheme ] = useState('light');
 	const [ auth, setAuth ] = useState(false);
 	const history = useHistory();
 	const dispatch = useDispatch();
-	const [ loading, setLoading ] = useState(false);
+	const [loading, setLoading] = useState(false);
+	
 
 	const responseSuccessGoogle = (response) => {
 		console.log(response);
-		fetch('/api/auth/google', {
+		fetch('http://localhost:8000/api/auth/google', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -38,6 +45,7 @@ const App = () => {
 				return res.json();
 			})
 			.then((result) => {
+				console.log(result);
 				dispatch(
 					setUserLogin({
 						name: result.name,
@@ -63,6 +71,8 @@ const App = () => {
 					progress: undefined
 				});
 				setAuth(true);
+				history.push('/events');
+				window.flash('logged In successfully!', 'success');
 			})
 			.catch((err) => {
 				toast.error(`Login failed`, {
@@ -77,24 +87,42 @@ const App = () => {
 			});
 	};
 
+	const logOutHandler = () => {
+		setAuth(false);
+		localStorage.removeItem('token');
+		localStorage.removeItem('userId');
+		localStorage.removeItem('username');
+		localStorage.removeItem('expiryTime');
+	};
+
+	const setAutoLogOut = (remTime) => {
+		setTimeout(() => {
+			history.push('/');
+			logOutHandler();
+		}, remTime);
+	};
+
 	const authListner = () => {
 		const token = localStorage.getItem('token');
 		if (!token) {
 			return;
 		}
 		setAuth(true);
+		history.push('/events');
 		setLoading(false);
 	};
 
 	useEffect(() => {
-		if (auth) {
-			history.push('/events');
-		} else {
-			history.push('/');
+		let expiryTime = localStorage.getItem('expiryTime');
+		const token = localStorage.getItem('token');
+		if (!token || !expiryTime) {
+			return;
 		}
+		// expiryTime = expiryTime.toISOString();
+		const remTime = new Date(new Date(expiryTime).getTime() - new Date().getTime());
+		setAutoLogOut(remTime);
 		authListner();
 	});
-
 	const themeToggler = () => {
 		theme === 'light' ? setTheme('dark') : setTheme('light');
 	};
@@ -109,6 +137,16 @@ const App = () => {
 
 				{auth ? (
 					<div>
+						<Button
+							auth={auth}
+							onClick={() => {
+								logOutHandler();
+								history.push('/');
+								window.flash('logged out successfully!', 'success');
+							}}
+						>
+							Logout
+						</Button>
 						<Switch>
 							<Route exact path='/events' component={() => <Events theme={theme} />} />
 						</Switch>
@@ -125,6 +163,7 @@ const App = () => {
 					</div>
 				)}
 			</ThemeProvider>
+			
 		</StyledApp>
 	);
 };

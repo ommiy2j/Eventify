@@ -15,6 +15,22 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+    serverAdmin: [
+        {
+            server: {
+                type: Schema.Types.ObjectId,
+                ref: 'server',
+            },
+        },
+    ],
+    serverMember: [
+        {
+            server: {
+                type: Schema.Types.ObjectId,
+                ref: 'server',
+            },
+        },
+    ],
     createdAt: {
         type: String,
         default: Date.now(),
