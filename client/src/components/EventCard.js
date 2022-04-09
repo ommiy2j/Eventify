@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import Button from './Elements/Button';
+import { Link, Redirect } from 'react-router-dom';
+import FormDialog from './Elements/Dialog';
 
-const EventCard = () => {
+const EventCard = ({ refId, id, name }) => {
 	return (
 		<EventCardContainer>
 			<DateSec>
@@ -10,10 +12,11 @@ const EventCard = () => {
 				<Date>14</Date>
 			</DateSec>
 			<ImgSec src='https://images.unsplash.com/photo-1475721027785-f74eccf877e2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTJ8fGV2ZW50fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60' />
-			<DetailsSec>Dance</DetailsSec>
-			<JoinButton>
-                <Button  children='Join' bgcolor='#6ebf8b' color='black' />
-			</JoinButton>
+			<DetailsSec>{name}</DetailsSec>
+			<FormDialog refId={refId} id={id} />
+			{/* <Link to={'/event/' + id}>
+				<JoinButton><Button children='Join' bgcolor='#6ebf8b' color='black' /></JoinButton>
+			</Link> */}
 		</EventCardContainer>
 	);
 };
@@ -24,12 +27,12 @@ const EventCardContainer = styled.div`
 	/* display: flex; */
 	width: 100%;
 	max-width: 360px;
-	height: 240px;
+	height: 260px;
 	background-color: #fff;
 	/*border: 1px solid #e6e6e6;*/
 
 	position: relative;
-	margin: 0 auto 30px;
+	margin: 30px;
 	border-radius: 4px;
 `;
 const DateSec = styled.div`
@@ -76,10 +79,8 @@ const DetailsSec = styled.div`
 	width: 100%;
 	height: 30px;
 	color: #000;
+	margin: 0 0 10px 0;
 	font-size: 1.7rem;
-    font-weight: 600;
+	font-weight: 600;
 `;
-const JoinButton = styled.div`
-margin-top: 5px;
-
-`;
+const JoinButton = styled.div`margin-top: 5px;`;

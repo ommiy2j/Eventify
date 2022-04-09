@@ -9,12 +9,12 @@ import AdapterDate from '@mui/lab/AdapterMoment';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 
 ReactDOM.render(
-	<Router>
-		<LocalizationProvider dateAdapter={AdapterDate}>
-			<Provider store={store}>
+	<LocalizationProvider dateAdapter={AdapterDate}>
+		<Provider store={store}>
+			<Router>
 				<App />
-			</Provider>
-		</LocalizationProvider>
-	</Router>,
+			</Router>
+		</Provider>
+	</LocalizationProvider>,
 	document.getElementById('root')
 );

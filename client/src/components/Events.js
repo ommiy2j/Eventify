@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import Loader from '../Loader';
 import AddEvent from './AddEvent/AddEvent';
 import AddEvents from './AddEvent/AddEvent';
 import AddBook from './AddEvent/AddEvent';
@@ -12,21 +13,22 @@ const Events = ({ theme }) => {
 	const [ UpcomingEvents, setUpcomingEvents ] = useState([]);
 	const [ AllEvent, setAllEvent ] = useState([]);
 	const [ addPop, setAddPop ] = useState(false);
+	const [ loading, setLoading ] = useState(true);
 
 	const showAddEvent = () => {
 		console.log(addPop);
 		setAddPop(true);
 	};
 	const closeAddEvent = () => {
-		console.log(addPop)
+		console.log(addPop);
 		setAddPop(false);
 	};
 
 	useEffect(() => {
-		fetch('url', {
+		fetch('http://localhost:8000/api/server/servers', {
 			method: 'GET',
 			headers: {
-				Authorization: 'Bearer' + localStorage.getItem('token')
+				'X-Auth-Token': localStorage.getItem('token')
 			}
 		})
 			.then((res) => {
@@ -40,6 +42,10 @@ const Events = ({ theme }) => {
 				return res.json();
 			})
 			.then((result) => {
+				console.log(result);
+				setOngoingEvents([ ...result ]);
+				console.log(ongoingEvents);
+				setLoading(false);
 				//filter ongoingevents
 				// setOngoingEvents(() => {
 				// 	AllEvent.filter((a) => {
@@ -52,7 +58,7 @@ const Events = ({ theme }) => {
 			.catch((err) => {
 				console.log(err);
 			});
-	});
+	}, []);
 
 	return (
 		<EventCotainer>
@@ -64,12 +70,12 @@ const Events = ({ theme }) => {
 				<OnGoingEvent>
 					<Heading theme={theme}>Ongoing Events</Heading>
 					<ShowAllEvents>
-						{ongoingEvents.length > 0 ? (
-							ongoingEvents.map((events) => {
-								<EventCard />;
-							})
+						{loading ? (
+							<Loader />
 						) : (
-							<Nothing>Nothing to show</Nothing>
+							ongoingEvents.map((event) => (
+								<EventCard key={event._id} refId={event.reference_id} id={event._id} name={event.serverName} />
+							))
 						)}
 					</ShowAllEvents>
 				</OnGoingEvent>
@@ -79,7 +85,13 @@ const Events = ({ theme }) => {
 					<ShowAllEvents>
 						{UpcomingEvents.length > 0 ? (
 							UpcomingEvents.map((events) => {
-								<EventCard />;
+								<EventCard
+									id={events._id}
+									key={events._id}
+									eventName={events.eventName}
+									eventDate={events.eventDate}
+									eventImg={events.eventImg}
+								/>;
 							})
 						) : (
 							<Nothing>Nothing to show</Nothing>
@@ -139,6 +151,8 @@ const Heading = styled.div`
 const ShowAllEvents = styled.div`
 	margin-top: 40px;
 	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
 `;
 
 const Nothing = styled.div`

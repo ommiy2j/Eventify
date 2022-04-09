@@ -1,30 +1,42 @@
 .alert {
-    color: white;
-    border-radius: 4px;
-    position: absolute;
-    right: 4px;
-    top: 45px;
-    padding: 8px 15px;
-    display: flex;
-    align-items: center;
-    z-index: 1111;
-    }
-    .alert p {
-        color: #fff;
-    margin: 0;
-    }
-    .alert-error {
-    background: lightcoral;
-    }
-    .alert-success {
-    background: rgba(12, 143, 33, 0.795);
-    }
-    .close {
-    color: white;
-    cursor: pointer;
-    margin-right: 10px;
-    }
-    .close strong{
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.384);
-    }
+	color: white;
+	border-radius: 2px;
+	position: fixed;
+	right: 4px;
+	top: 45px;
+	padding: 8px 15px;
+	display: flex;
+	align-items: center;
+	z-index: 1111;
+	transition: 1s ease;
+	transform: translate(0%, 0%);
+	animation: animate 1s;
+}
+
+@keyframes animate {
+	0% {
+		transform: translate(0, 0);
+	}
+	100% {
+		transform: translate(-100, 50%);
+	}
+}
+.alert p {
+	color: rgb(251, 247, 247);
+	margin: 0;
+}
+.alert-error {
+	background: rgb(255, 0, 0);
+}
+.alert-success {
+	background: rgba(0, 255, 42, 0.904);
+}
+.close {
+	color: rgb(0, 0, 0);
+	cursor: pointer;
+	margin-right: 10px;
+}
+.close strong {
+	font-size: 0.9rem;
+	color: rgba(0, 0, 0, 0.384);
+}

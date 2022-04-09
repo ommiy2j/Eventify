@@ -5,28 +5,62 @@ import TextField from '@mui/material/TextField';
 import DateTimePicker from '@mui/lab/DateTimePicker';
 import { InputLabel } from '@mui/material';
 import { Button } from '@mui/material';
-import { Input } from '@mui/material';
 import { Typography } from '@mui/material';
 import { Stack } from '@mui/material';
 import { useEffect } from 'react';
 import moment from 'moment';
-import { Alert } from '@mui/material';
-import { AlertTitle } from '@mui/material';
+import { IconButton } from '@mui/material';
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
 
 const AddEvent = ({ closeAddEvent, addPop }) => {
 	const [ fromDate, setFromDate ] = useState(new Date());
 	const [ toDate, setToDate ] = useState(new Date());
-	const [ eventName, setEventName ] = useState('');
+	const [ serverName, setEventName ] = useState('');
+	const [ image, setImage ] = useState('');
+	const [ imageUrl, setImageUrl ] = useState('');
 
-    const URL=''
+	const URL = '';
 
 	const CreateEvent = () => {
-		var date = moment(fromDate).isAfter(toDate);
-		console.log(fromDate, toDate, eventName, date);
+		const formdata = new FormData();
+		formdata.append('serverName', serverName);
+		formdata.append('fromDate', fromDate);
+		formdata.append('toDate', toDate);
+		formdata.append('image', image);
+
+		// var date = moment(fromDate).isAfter(toDate);
+		// console.log(fromDate, toDate, serverName, date);
 		if (!ValidateDate()) {
 			alert('Wrong Date And time');
-        }
-        fetch()
+		}
+
+		fetch('http://localhost:8000/api/server/create', {
+			method: 'POST',
+			body: JSON.stringify({
+				serverName,
+				fromDate,
+				toDate
+			}),
+			headers: {
+				'Content-Type': 'application/json',
+				'x-auth-token': localStorage.getItem('token')
+			}
+		})
+			.then((res) => res.json())
+			.then((result) => {
+				console.log(result);
+				window.flash('Event  Created!', 'success');
+			})
+			.catch((err) => {
+				console.log(err);
+				window.flash('Failed!', 'error');
+			});
+	};
+
+	const onFileChange = (e) => {
+		setImage(e.target.files[0]);
+		const imgUrl = URL.createObjectURL(e.target.files[0]);
+		setImageUrl(imgUrl);
 	};
 
 	const ValidateDate = () => {
@@ -35,12 +69,20 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 		}
 		return true;
 	};
+	useEffect(() => {}, [ serverName, toDate, fromDate ]);
 
-	useEffect(() => {}, [ eventName, toDate, fromDate ]);
+	const Input = styled('input')({
+		display: 'none'
+	});
+
+	// const TextField = styled('textField')({
+	// 	width: '200px'
+	// })
+
 	return (
 		<Modal addPop={addPop}>
-			<Typography variant='h4' color='#6EBF8B' mb={3} component='h2'>
-				Add Event
+			<Typography variant='h4' color='#000' mb={3} component='h2'>
+				Create Event
 			</Typography>
 			<EventName>
 				<TextField
@@ -49,7 +91,7 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 					size='small'
 					fullWidth
 					margin='dense'
-					value={eventName}
+					value={serverName}
 					onChange={(e) => setEventName(e.target.value)}
 					variant='outlined'
 					required
@@ -80,6 +122,34 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 					/>
 				</To>
 			</EventDate>
+			<Stack direction='row' justifyContent='center' alignItems='center' spacing={2} mb={4}>
+				Upload Image
+				<label htmlFor='contained-button-file'>
+					<Input
+						accept='image/*'
+						id='contained-button-file'
+						onChange={(e) => onFileChange(e)}
+						multiple
+						type='file'
+					/>
+					<IconButton color='primary' aria-label='upload picture' component='span'>
+						<PhotoCamera />
+					</IconButton>
+				</label>
+				{!image ? (
+					<ImageShow src='https://images.unsplash.com/photo-1475721027785-f74eccf877e2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTJ8fGV2ZW50fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60' />
+				) : (
+					<ImageShow src={imageUrl} alt='' />
+				)}
+			</Stack>
+
+			{/* <label htmlFor='icon-button-file'>
+				<Input accept='image/*' id='icon-button-file' type='file' />
+				<IconButton color='primary' aria-label='upload picture' component='span'>
+					<PhotoCamera />
+				</IconButton>
+			</label> */}
+
 			{/* <ImageUpload cardName="Input Image" imageGallery={galleryImageList} /> */}
 			<Stack direction='row' justifyContent='center' alignItems='center' spacing={2}>
 				<Button variant='outlined' color='primary' onClick={CreateEvent}>
@@ -130,14 +200,14 @@ const out = keyframes`
 `;
 
 const Modal = styled.div`
-	position: absolute;
+	position: fixed;
 	top: 50%;
 	left: 50%;
 	transform: ${(p) => (p.addPop ? 'scale(1) translate(-50%, -50%) ' : 'scale(0) translate(150%, -110%)')};
 	/* display: ${(p) => (p.addPop ? 'block ' : 'none')}; */
     z-index: 12;
-    height: 450px;
-    width: 400px;
+    height: 600px;
+    width: 500px;
     transition: 0.2s cubic-bezier(0.445, 0.05, 0.55, 0.95)  ;
     border-radius: 6px;
     background-color: white;
@@ -150,3 +220,9 @@ const EventName = styled.div`margin-bottom: 20px;`;
 const EventDate = styled.div`margin-top: 30px;`;
 const To = styled.div`margin: 30px 0 40px;`;
 const From = styled.div``;
+
+const ImageShow = styled.img`
+	width: 100px;
+	height: 100px;
+	/* border: 1px solid; */
+`;

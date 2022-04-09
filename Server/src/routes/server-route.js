@@ -9,7 +9,7 @@ const User = require('../model/User');
 router.post('/create', auth, async (req, res) => {
 	try {
 		const { serverName } = req.body;
-		console.log(req);
+		console.log(req.body);
 		const admin = req.user.id;
 		const reference_id = generate();
 

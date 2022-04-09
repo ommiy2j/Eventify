@@ -7,25 +7,27 @@ import Welcome from './components/Welcome';
 import { setUserLogin } from './features/userSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { Route, BrowserRouter as Router, Switch, useHistory } from 'react-router-dom';
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
 import Events from './components/Events';
 import Bus from './utils/Bus';
 import { Flash } from './components/Flash';
-import Button from './components/Elements/Button';
-import AddEvent from './components/AddEvent/AddEvent';
+import Event from './components/Event';
+import { IconButton } from '@mui/material';
+import LogoutIcon from '@mui/icons-material/Logout';
+import DarkModeTwoToneIcon from '@mui/icons-material/DarkModeTwoTone';
+import LightModeTwoToneIcon from '@mui/icons-material/LightModeTwoTone';
 
 const App = () => {
 	window.flash = (message, type = 'success') => Bus.emit('flash', { message, type });
 
-	const [ theme, setTheme ] = useState('light');
+	const [ theme, setTheme ] = useState('dark');
 	const [ auth, setAuth ] = useState(false);
 	const history = useHistory();
 	const dispatch = useDispatch();
-	const [loading, setLoading] = useState(false);
-	
+	const [ loading, setLoading ] = useState(false);
 
 	const responseSuccessGoogle = (response) => {
-		console.log(response);
+		setLoading(true);
 		fetch('http://localhost:8000/api/auth/google', {
 			method: 'POST',
 			headers: {
@@ -45,7 +47,6 @@ const App = () => {
 				return res.json();
 			})
 			.then((result) => {
-				console.log(result);
 				dispatch(
 					setUserLogin({
 						name: result.name,
@@ -56,34 +57,16 @@ const App = () => {
 				localStorage.setItem('token', result.token);
 				localStorage.setItem('username', result.name);
 				localStorage.setItem('userId', result.userId);
-				const remTime = 60 * 60 * 1000;
+				const remTime = 6*60 * 60 * 1000;
 				const expiryTime = new Date(new Date().getTime() + remTime);
 				localStorage.setItem('expiryTime', expiryTime);
-
-				history.push('/events');
-				toast.success('🦄 Logged In Success', {
-					position: 'bottom-center',
-					autoClose: 5000,
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-					progress: undefined
-				});
 				setAuth(true);
-				history.push('/events');
 				window.flash('logged In successfully!', 'success');
+				history.push('/events');
+				setLoading(false);
 			})
 			.catch((err) => {
-				toast.error(`Login failed`, {
-					position: 'bottom-center',
-					autoClose: 5000,
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-					progress: undefined
-				});
+				window.flash('logged In Failed!', 'error');
 			});
 	};
 
@@ -108,9 +91,11 @@ const App = () => {
 			return;
 		}
 		setAuth(true);
-		history.push('/events');
+		// history.push('/events');
 		setLoading(false);
 	};
+
+	const getTheme = localStorage.getItem('theme');
 
 	useEffect(() => {
 		let expiryTime = localStorage.getItem('expiryTime');
@@ -122,6 +107,7 @@ const App = () => {
 		const remTime = new Date(new Date(expiryTime).getTime() - new Date().getTime());
 		setAutoLogOut(remTime);
 		authListner();
+		localStorage.setItem('theme', theme);
 	});
 	const themeToggler = () => {
 		theme === 'light' ? setTheme('dark') : setTheme('light');
@@ -131,24 +117,35 @@ const App = () => {
 		<StyledApp className='App'>
 			<ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
 				<GlobalStyles />
-				<DarkToggler onClick={themeToggler}>
-					<Bulb src={theme === 'dark' ? './assests/bulb-glow.png' : './assests/lightt.png'} />
-				</DarkToggler>
-
 				{auth ? (
 					<div>
-						<Button
-							auth={auth}
-							onClick={() => {
-								logOutHandler();
-								history.push('/');
-								window.flash('logged out successfully!', 'success');
-							}}
-						>
-							Logout
-						</Button>
+						<DarkToggler>
+							<Bulb onClick={themeToggler}>
+								{theme === 'light' ? (
+									<DarkModeTwoToneIcon color='inherit' />
+								) : (
+									<LightModeTwoToneIcon color='inherit' />
+								)}
+							</Bulb>
+							<LogOut theme={theme}>
+								<IconButton
+									color='inherit'
+									aria-label='delete'
+									auth={auth}
+									onClick={() => {
+										logOutHandler();
+										history.push('/');
+										window.flash('logged out successfully!', 'success');
+									}}
+								>
+									<LogoutIcon />
+								</IconButton>
+							</LogOut>
+						</DarkToggler>
 						<Switch>
-							<Route exact path='/events' component={() => <Events theme={theme} />} />
+							<Route exact path='/events' render={() => <Events theme={theme} />} />
+							<Route path='/:userId' render={() => <Event theme={theme} />} />
+							<Redirect to='/events' />
 						</Switch>
 					</div>
 				) : (
@@ -163,7 +160,7 @@ const App = () => {
 					</div>
 				)}
 			</ThemeProvider>
-			
+			<Flash />
 		</StyledApp>
 	);
 };
@@ -174,14 +171,17 @@ const StyledApp = styled.div`
   /* background-color: ${(props) => props.theme.body}; */
 `;
 const DarkToggler = styled.div`
-	position: absolute;
+	position: fixed;
 	top: 0px;
 	right: 10px;
 	width: 50px;
 	height: 50px;
 	cursor: pointer;
+	z-index: 999;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
 `;
-const Bulb = styled.img`
-	width: 100%;
-	height: 100%;
-`;
+
+const Bulb = styled.div``;
+const LogOut = styled.div`color: ${(p) => (p.theme === 'dark' ? '#fff' : '#000')};`;
