@@ -68,4 +68,25 @@ router.get('/servers', auth, async (req, res) => {
 	}
 });
 
+router.get('/allservers', auth, (req, res) => {
+	const currentPage = req.query.page || 1;
+	const perPage = 3;
+	let total = 0;
+	Server.find()
+		.countDocuments()
+		.then((count) => {
+			total = count;
+			return Server.find().skip((currentPage - 1) * perPage).limit(perPage);
+		})
+		.then((result) => {
+			res.status(200).json({
+				result: result,
+				total: Math.ceil(total / perPage)
+			});
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+});
+
 module.exports = router;

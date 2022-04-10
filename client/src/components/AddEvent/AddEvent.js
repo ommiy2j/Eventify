@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 import moment from 'moment';
 import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import { useRef } from 'react';
 
 const AddEvent = ({ closeAddEvent, addPop }) => {
 	const [ fromDate, setFromDate ] = useState(new Date());
@@ -18,6 +19,8 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 	const [ serverName, setEventName ] = useState('');
 	const [ image, setImage ] = useState('');
 	const [ imageUrl, setImageUrl ] = useState('');
+
+	const popRef = useRef(null);
 
 	const URL = '';
 
@@ -80,7 +83,7 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 	// })
 
 	return (
-		<Modal addPop={addPop}>
+		<Modal addPop={addPop} ref={popRef}>
 			<Typography variant='h4' color='#000' mb={3} component='h2'>
 				Create Event
 			</Typography>

@@ -1,3 +1,4 @@
+import { Pagination } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Loader from '../Loader';
@@ -14,6 +15,9 @@ const Events = ({ theme }) => {
 	const [ AllEvent, setAllEvent ] = useState([]);
 	const [ addPop, setAddPop ] = useState(false);
 	const [ loading, setLoading ] = useState(true);
+	const [ page, setPage ] = useState(1);
+	const [ didMount, setDidMount ] = useState(false);
+	const [ totalPage, setTotalPage ] = useState(1);
 
 	const showAddEvent = () => {
 		console.log(addPop);
@@ -24,8 +28,8 @@ const Events = ({ theme }) => {
 		setAddPop(false);
 	};
 
-	useEffect(() => {
-		fetch('http://localhost:8000/api/server/servers', {
+	const getAllEvents = () => {
+		fetch(`http://localhost:8000/api/server/allservers?page=${page}`, {
 			method: 'GET',
 			headers: {
 				'X-Auth-Token': localStorage.getItem('token')
@@ -41,10 +45,11 @@ const Events = ({ theme }) => {
 				}
 				return res.json();
 			})
-			.then((result) => {
-				console.log(result);
-				setOngoingEvents([ ...result ]);
+			.then((events) => {
+				console.log(events);
+				setOngoingEvents(events.result);
 				console.log(ongoingEvents);
+				setTotalPage(events.total);
 				setLoading(false);
 				//filter ongoingevents
 				// setOngoingEvents(() => {
@@ -58,8 +63,25 @@ const Events = ({ theme }) => {
 			.catch((err) => {
 				console.log(err);
 			});
-	}, []);
+	};
 
+	const handlepaging = (e, p) => {
+		console.log(p);
+		setPage(p);
+	};
+
+	useEffect(
+		() => {
+			setDidMount(true);
+			getAllEvents();
+			return () => setDidMount(false);
+		},
+		[ page ]
+	);
+
+	if (!didMount) {
+		return null;
+	}
 	return (
 		<EventCotainer>
 			<Cover theme={theme}>
@@ -74,10 +96,16 @@ const Events = ({ theme }) => {
 							<Loader />
 						) : (
 							ongoingEvents.map((event) => (
-								<EventCard key={event._id} refId={event.reference_id} id={event._id} name={event.serverName} />
+								<EventCard
+									key={event._id}
+									refId={event.reference_id}
+									id={event._id}
+									name={event.serverName}
+								/>
 							))
 						)}
 					</ShowAllEvents>
+					<Pagination onChange={handlepaging} count={totalPage} color='primary' />
 				</OnGoingEvent>
 
 				<UpcomingEvent>
@@ -97,6 +125,7 @@ const Events = ({ theme }) => {
 							<Nothing>Nothing to show</Nothing>
 						)}
 					</ShowAllEvents>
+					<Pagination onChange={handlepaging} count={totalPage} color='primary' />
 				</UpcomingEvent>
 			</AllEvents>
 			<AddEvent closeAddEvent={closeAddEvent} addPop={addPop} />
@@ -112,8 +141,8 @@ const EventCotainer = styled.div`
 	font-family: "Varela Round", sans-serif;
 	position: relative;
 `;
-const UpcomingEvent = styled.div``;
-const OnGoingEvent = styled.div``;
+const UpcomingEvent = styled.div`position: relative;`;
+const OnGoingEvent = styled.div`position: relative;`;
 const EventHEading = styled.div`
 	font-family: 'Telefon Black';
 	font-size: 243px;
