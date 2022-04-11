@@ -12,6 +12,9 @@ import moment from 'moment';
 import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { useRef } from 'react';
+import copy from 'copy-text-to-clipboard';
+import { Box } from '@mui/material';
+import { useHistory } from 'react-router-dom';
 
 const AddEvent = ({ closeAddEvent, addPop }) => {
 	const [ fromDate, setFromDate ] = useState(new Date());
@@ -19,7 +22,9 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 	const [ serverName, setEventName ] = useState('');
 	const [ image, setImage ] = useState('');
 	const [ imageUrl, setImageUrl ] = useState('');
+	const [ refId, setRefId ] = useState('');
 
+	const history = useHistory();
 	const popRef = useRef(null);
 
 	const URL = '';
@@ -51,7 +56,10 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 		})
 			.then((res) => res.json())
 			.then((result) => {
-				console.log(result);
+				setRefId(result.reference_id);
+				// console.log(refId,result.reference_id);
+
+				history.push('/event/' + result.reference_id, { result });
 				window.flash('Event  Created!', 'success');
 			})
 			.catch((err) => {
@@ -155,7 +163,15 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 
 			{/* <ImageUpload cardName="Input Image" imageGallery={galleryImageList} /> */}
 			<Stack direction='row' justifyContent='center' alignItems='center' spacing={2}>
-				<Button variant='outlined' color='primary' onClick={CreateEvent}>
+				<Button
+					variant='outlined'
+					color='primary'
+					onClick={() => {
+						CreateEvent();
+						closeAddEvent();
+						history.push();
+					}}
+				>
 					Create
 				</Button>
 				<Button

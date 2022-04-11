@@ -100,7 +100,7 @@ const Events = ({ theme }) => {
 									key={event._id}
 									refId={event.reference_id}
 									id={event._id}
-									name={event.serverName}
+									result={event}
 								/>
 							))
 						)}

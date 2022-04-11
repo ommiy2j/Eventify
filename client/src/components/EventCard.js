@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Button from './Elements/Button';
 import { Link, Redirect } from 'react-router-dom';
 import FormDialog from './Elements/Dialog';
 
-const EventCard = ({ refId, id, name }) => {
+const EventCard = ({ refId, id, result }) => {
+	console.log(result);
+	const name = result.serverName;
+	
+
 	return (
 		<EventCardContainer>
 			<DateSec>
@@ -13,7 +17,7 @@ const EventCard = ({ refId, id, name }) => {
 			</DateSec>
 			<ImgSec src='https://images.unsplash.com/photo-1475721027785-f74eccf877e2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTJ8fGV2ZW50fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60' />
 			<DetailsSec>{name}</DetailsSec>
-			<FormDialog refId={refId} id={id} />
+			<FormDialog refId={refId} id={id} result={ result} />
 			{/* <Link to={'/event/' + id}>
 				<JoinButton><Button children='Join' bgcolor='#6ebf8b' color='black' /></JoinButton>
 			</Link> */}

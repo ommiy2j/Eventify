@@ -10,7 +10,7 @@ import { useHistory } from 'react-router-dom';
 import Bus from '../../utils/Bus';
 import { useRef } from 'react';
 
-export default function FormDialog ({ refId, id }) {
+export default function FormDialog ({ refId, id, result }) {
 	window.flash = (message, type = 'success') => Bus.emit('flash', { message, type });
 	const history = useHistory();
 	const [ open, setOpen ] = React.useState(false);
@@ -27,7 +27,7 @@ export default function FormDialog ({ refId, id }) {
 
 	const verify = () => {
 		if (refId === value) {
-			history.push('/event/' + id);
+			history.push('/event/' + refId, { result });
 			window.flash('Welcome', 'success');
 		} else {
 			window.flash('Faild to Join ', 'error');

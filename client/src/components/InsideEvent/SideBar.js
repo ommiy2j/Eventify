@@ -1,8 +1,19 @@
-import { Card, Stack,Tabs } from '@mui/material';
+import { Card, Stack, Tabs } from '@mui/material';
 import React from 'react';
 import styled from 'styled-components';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import copy from 'copy-text-to-clipboard';
+import { Tooltip } from '@mui/material';
+import { useState } from 'react';
 
-const SideBar = ({ theme }) => {
+const SideBar = ({ theme, refId }) => {
+	console.log(refId)
+	const [ copyTitle, setcopyTitle ] = useState('copy');
+
+	const handleCopy = () => {
+		copy(refId);
+		setcopyTitle('copied');
+	};
 	return (
 		<Sidebar>
 			<Card
@@ -13,8 +24,21 @@ const SideBar = ({ theme }) => {
 					color: (theme) => (theme === 'dark' ? '#ffff' : '#000')
 				}}
 			>
+				<Copy>
+					Copy Room Id
+					<Tooltip title={copyTitle}>
+						<ContentCopyIcon
+							className='copyBtn'
+							color='inherit'
+							onClick={handleCopy}
+							onBlur={() => setcopyTitle('copy')}
+						/>
+					</Tooltip>
+				</Copy>
 				<AllPeople>
-					<Head><Tabs>Members</Tabs></Head>
+					<Head>
+						<Tabs>Members</Tabs>
+					</Head>
 					<Stack spacing={2}>Amit</Stack>
 				</AllPeople>
 			</Card>
@@ -39,4 +63,9 @@ const Head = styled.div`
 	text-align: left;
 	margin: 20px;
 	border: 2px solid;
+`;
+const Copy = styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: center;
 `;

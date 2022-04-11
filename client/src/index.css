@@ -43,3 +43,8 @@ code {
 	z-index: 1;
 	transform: translateX(-50%);
 }
+
+.copyBtn {
+	cursor: pointer;
+	padding-left: 10px;
+}
