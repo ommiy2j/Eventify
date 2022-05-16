@@ -11,6 +11,8 @@ import Bus from '../../utils/Bus';
 import { useRef } from 'react';
 
 export default function FormDialog ({ refId, id, result }) {
+	const reference_id = refId;
+
 	window.flash = (message, type = 'success') => Bus.emit('flash', { message, type });
 	const history = useHistory();
 	const [ open, setOpen ] = React.useState(false);
@@ -26,8 +28,25 @@ export default function FormDialog ({ refId, id, result }) {
 	};
 
 	const verify = () => {
-		if (refId === value) {
-			history.push('/event/' + refId, { result });
+		if (reference_id === value) {
+			history.push('/event/' + reference_id, { result });
+			fetch('http://localhost:8000/api/server/join', {
+				method: 'POST',
+				body: JSON.stringify({
+					reference_id
+				}),
+				headers: {
+					'Content-Type': 'application/json',
+					'x-auth-token': localStorage.getItem('token')
+				}
+			})
+				.then((res) => {
+					console.log(res);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+			
 			window.flash('Welcome', 'success');
 		} else {
 			window.flash('Faild to Join ', 'error');

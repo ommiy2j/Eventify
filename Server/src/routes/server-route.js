@@ -8,12 +8,14 @@ const User = require('../model/User');
 //creating a server
 router.post('/create', auth, async (req, res) => {
 	try {
-		const { serverName } = req.body;
-		console.log(req.body);
+		const { serverName, eventStartDate, eventEndDate } = req.body;
+		let image = req.file.path;
 		const admin = req.user.id;
+		image = '/' + req.file.path.replace('\\', '/');
+
 		const reference_id = generate();
 
-		const server = new Server({ serverName, admin, reference_id });
+		const server = new Server({ serverName, admin, reference_id, image, eventStartDate, eventEndDate });
 		server.members.unshift(admin);
 		const user = await User.findById(admin);
 
@@ -29,29 +31,58 @@ router.post('/create', auth, async (req, res) => {
 	}
 });
 
-router.post('/join', auth, async (req, res) => {
-	try {
-		const { reference_id } = req.body;
-		let server = await Server.findOne({ reference_id });
-		if (!server) {
-			res.status(404).json({ message: 'server not found' });
-		} else {
-			const isMember = server.members.find((member) => member._id.toString() === req.user.id);
-			if (isMember || server.admin === req.user.id) {
-				res.json({ message: 'already a member' });
+router.post('/join', auth, (req, res) => {
+	const { reference_id } = req.body;
+	let mem;
+	let id;
+	userId = req.user.id;
+
+	Server.findOne({ reference_id })
+		.then((server) => {
+			if (!server) {
+				res.status(404).json({ message: 'server not found' });
 			} else {
-				server.members.unshift(req.user.id);
-				await server.save();
-				const user = await User.findById(req.user.id);
-				user.serverMember.unshift(server.id);
-				await user.save();
-				res.status(201).send(server);
+				mem = server.members;
+				id = server._id;
 			}
-		}
-	} catch (err) {
-		console.log(err);
-	}
+			for (var i = 0; i < mem.length; i++) {
+				if (mem[i]._id == userId) {
+					return res.json({ messege: 'already a member' });
+				}
+			}
+			mem.unshift(req.user.id);
+			Server.findByIdAndUpdate(id, { members: mem });
+			return res.json({ messege: ' successfully joined' });
+		})
+		.catch((err) => {
+			console.log(err);
+		});
 });
+
+// router.post('/join', auth, async (req, res) => {
+// 	try {
+// 		const { reference_id } = req.body;
+// 		console.log(reference_id);
+// 		let server = await Server.findOne({ reference_id });
+// 		if (!server) {
+// 			res.status(404).json({ message: 'server not found' });
+// 		} else {
+// 			const isMember = server.members.find((member) => member._id.toString() === req.user.id);
+// 			if (isMember || server.admin === req.user.id) {
+// 				res.json({ message: 'already a member' });
+// 			} else {
+// 				await server.members.insertOne(req.user.id);
+// 				// await server.save();
+// 				const user = await User.findById(req.user.id);
+// 				await user.serverMember.insertOne(server.id);
+// 				// await user.save();
+// 				res.status(201).send(server);
+// 			}
+// 		}
+// 	} catch (err) {
+// 		console.log(err);
+// 	}
+// });
 
 //get servers for current user
 router.get('/servers', auth, async (req, res) => {

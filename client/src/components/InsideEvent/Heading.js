@@ -2,10 +2,7 @@ import { Card } from '@mui/material';
 import React from 'react';
 import styled from 'styled-components';
 
-
-const Heading = ({ theme }) => {
-	
-
+const Heading = ({ theme, name }) => {
 	return (
 		<HeadIng>
 			<Card
@@ -16,8 +13,7 @@ const Heading = ({ theme }) => {
 					color: (theme) => (theme === 'dark' ? '#ffff' : '#000')
 				}}
 			>
-				<EventName>Dance</EventName>
-				
+				<EventName>{name}</EventName>
 			</Card>
 		</HeadIng>
 	);
@@ -39,5 +35,3 @@ const EventName = styled.h2`
 	margin-left: 20px;
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
 `;
-
-

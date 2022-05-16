@@ -10,11 +10,11 @@ const Event = ({ theme }) => {
 	const location = useLocation();
 	console.log();
 	const props = location.state.result;
-	console.log(theme, props.reference_id);
+	console.log(theme, props);
 
 	return (
 		<Container id='container'>
-			<Heading theme={theme} />
+			<Heading theme={theme} name={props.serverName} />
 			<SideBar refId={props.reference_id} theme={theme} />
 			<Chat theme={theme} />
 			<Activities theme={theme} />
