@@ -89,6 +89,7 @@ const Events = ({ theme }) => {
 				<Button children='Create Event' color='#fff' bgcolor='#000B49' onClick={showAddEvent} />
 			</Cover>
 			<AllEvents>
+				
 				<OnGoingEvent>
 					<Heading theme={theme}>Ongoing Events</Heading>
 					<ShowAllEvents>

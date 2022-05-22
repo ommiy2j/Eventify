@@ -35,7 +35,7 @@ router.post('/join', auth, (req, res) => {
 	const { reference_id } = req.body;
 	let mem;
 	let id;
-	userId = req.user.id;
+	let userId = req.user.id;
 
 	Server.findOne({ reference_id })
 		.then((server) => {
@@ -51,6 +51,7 @@ router.post('/join', auth, (req, res) => {
 				}
 			}
 			mem.unshift(req.user.id);
+			console.log(mem)
 			Server.findByIdAndUpdate(id, { members: mem });
 			return res.json({ messege: ' successfully joined' });
 		})
