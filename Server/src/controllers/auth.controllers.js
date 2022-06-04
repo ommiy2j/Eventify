@@ -40,7 +40,7 @@ class AuthController {
 
 				jwt.sign(payload, process.env.JWTSECRET, { expiresIn: 360000 }, (err, token) => {
 					if (err) throw err;
-					res.json({ token, name, email });
+					res.json({ token, name, email ,picture});
 				});
 				// res.status(201).json(user.id);
 			}

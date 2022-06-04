@@ -5,15 +5,33 @@ import { Link, Redirect } from 'react-router-dom';
 import FormDialog from './Elements/Dialog';
 
 const EventCard = ({ refId, id, result }) => {
-	console.log(result);
+	const monthNames = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sept',
+        'Oct',
+        'Nov',
+        'Dec',
+    ];
 	const name = result.serverName;
+    const from = result.fromDate;
+    const to = result.toDate;
+    console.log(from);
+    const month = parseInt(from.substring(5, 7));
+    const date = parseInt(from.substring(8, 10));
 	const image = result.image;
 	console.log(image)
 	return (
 		<EventCardContainer>
 			<DateSec>
-				<Month>Jan</Month>
-				<Date>14</Date>
+			<Month>{monthNames[month - 1]}</Month>
+                <Date>{date}</Date>
 			</DateSec>
 			<ImgSec
 				src={

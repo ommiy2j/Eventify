@@ -16,6 +16,7 @@ import { IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DarkModeTwoToneIcon from '@mui/icons-material/DarkModeTwoTone';
 import LightModeTwoToneIcon from '@mui/icons-material/LightModeTwoTone';
+import ShowProfile from './components/Profile/ShowProfile';
 
 const App = () => {
 	window.flash = (message, type = 'success') => Bus.emit('flash', { message, type });
@@ -25,6 +26,7 @@ const App = () => {
 	const history = useHistory();
 	const dispatch = useDispatch();
 	const [ loading, setLoading ] = useState(false);
+	const [pic,setpic]=useState('');
 
 	const responseSuccessGoogle = (response) => {
 		setLoading(true);
@@ -53,7 +55,8 @@ const App = () => {
 						token: result.token
 					})
 				);
-
+				console.log(result)
+				setpic(result.picture);
 				localStorage.setItem('token', result.token);
 				localStorage.setItem('username', result.name);
 				localStorage.setItem('userId', result.userId);
@@ -141,6 +144,7 @@ const App = () => {
 									<LogoutIcon />
 								</IconButton>
 							</LogOut>
+							<ShowProfile picture={pic}/>
 						</DarkToggler>
 						<Switch>
 							<Route exact path='/events' render={() => <Events theme={theme} />} />
@@ -174,7 +178,7 @@ const DarkToggler = styled.div`
 	position: fixed;
 	top: 0px;
 	right: 10px;
-	width: 50px;
+	width: 200px;
 	height: 50px;
 	cursor: pointer;
 	z-index: 999;

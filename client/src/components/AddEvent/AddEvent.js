@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import TextField from '@mui/material/TextField';
+
 import DateTimePicker from '@mui/lab/DateTimePicker';
 import { InputLabel } from '@mui/material';
 import { Button } from '@mui/material';
@@ -8,7 +9,7 @@ import { Typography } from '@mui/material';
 import { Stack } from '@mui/material';
 import { useEffect } from 'react';
 import moment from 'moment';
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { useRef } from 'react';
 import copy from 'copy-text-to-clipboard';
@@ -26,25 +27,30 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 	const history = useHistory();
 	const popRef = useRef(null);
 
+	const URL = '';
+
 	const CreateEvent = () => {
 		const formdata = new FormData();
 		formdata.append('serverName', serverName);
-		formdata.append('eventStartDate', fromDate);
-		formdata.append('eventEndDate', toDate);
+		formdata.append('fromDate', fromDate);
+		formdata.append('toDate', toDate);
 		formdata.append('image', image);
 
 		// var date = moment(fromDate).isAfter(toDate);
 		// console.log(fromDate, toDate, serverName, date);
 		if (!ValidateDate()) {
 			alert('Wrong Date And time');
-			return;
 		}
 
 		fetch('http://localhost:8000/api/server/create', {
 			method: 'POST',
-			body: formdata,
+			body: JSON.stringify({
+				serverName,
+				fromDate,
+				toDate
+			}),
 			headers: {
-				// 'Content-Type': 'application/json',
+				'Content-Type': 'application/json',
 				'x-auth-token': localStorage.getItem('token')
 			}
 		})
@@ -63,7 +69,6 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 	};
 
 	const onFileChange = (e) => {
-		console.log(e.target.files);
 		setImage(e.target.files[0]);
 		const imgUrl = URL.createObjectURL(e.target.files[0]);
 		setImageUrl(imgUrl);
@@ -74,14 +79,6 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 			return false;
 		}
 		return true;
-	};
-
-	const toDateHandler = (newValue) => {
-		setToDate(newValue);
-		// if (!ValidateDate()) {
-		// 	alert('wrong Date');
-		// 	return;
-		// }
 	};
 	useEffect(() => {}, [ serverName, toDate, fromDate ]);
 
@@ -118,10 +115,10 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 						renderInput={(props) => <TextField {...props} />}
 						label='DateTimePicker'
 						value={fromDate}
+						required
 						onChange={(newValue) => {
 							setFromDate(newValue);
 						}}
-						required
 					/>
 				</From>
 				<To>
@@ -130,27 +127,27 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 						renderInput={(props) => <TextField {...props} />}
 						label='DateTimePicker'
 						value={toDate}
-						onChange={(e) => toDateHandler(e)}
+						onChange={(newValue) => {
+							setToDate(newValue);
+						}}
 					/>
 				</To>
 			</EventDate>
 			<Stack direction='row' justifyContent='center' alignItems='center' spacing={2} mb={4}>
 				Upload Image
-				<Tooltip title='Upload Event Image'>
-					<label htmlFor='contained-button-file'>
-						<Input
-							accept='image/*'
-							id='contained-button-file'
-							onChange={(e) => onFileChange(e)}
-							single
-							type='file'
-						/>
-						<IconButton color='primary' aria-label='upload picture' component='span'>
-							<PhotoCamera />
-						</IconButton>
-					</label>
-				</Tooltip>
-				{image === '' ? (
+				<label htmlFor='contained-button-file'>
+					<Input
+						accept='image/*'
+						id='contained-button-file'
+						onChange={(e) => onFileChange(e)}
+						multiple
+						type='file'
+					/>
+					<IconButton color='primary' aria-label='upload picture' component='span'>
+						<PhotoCamera />
+					</IconButton>
+				</label>
+				{!image ? (
 					<ImageShow src='https://images.unsplash.com/photo-1475721027785-f74eccf877e2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTJ8fGV2ZW50fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60' />
 				) : (
 					<ImageShow src={imageUrl} alt='' />
@@ -172,6 +169,7 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 					onClick={() => {
 						CreateEvent();
 						closeAddEvent();
+						history.push();
 					}}
 				>
 					Create

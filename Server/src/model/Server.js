@@ -17,11 +17,11 @@ const ServerSchema = new mongoose.Schema({
 	image: {
 		type: String
 	},
-	eventStartDate: {
+	fromDate: {
 		type: Date,
 		required: true
 	},
-	eventEndDate: {
+	toDate: {
 		type: Date,
 		required: true
 	},
@@ -33,14 +33,6 @@ const ServerSchema = new mongoose.Schema({
 			}
 		}
 	],
-	conversations: [
-		{
-			conversation: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: 'Conversation'
-			}
-		}
-	]
 });
 
 const Server = mongoose.model('Server', ServerSchema);
