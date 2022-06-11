@@ -33,6 +33,16 @@ const ServerSchema = new mongoose.Schema({
 			}
 		}
 	],
+	rooms: [
+        {
+            roomName: {
+                type: String,
+            },
+            roomId: {
+                type: String,
+            },
+        },
+    ],
 });
 
 const Server = mongoose.model('Server', ServerSchema);

@@ -4,7 +4,6 @@ import styled from "styled-components";
 import Loader from "../Loader";
 import AddEvent from "./AddEvent/AddEvent";
 import AddEvents from "./AddEvent/AddEvent";
-import AddBook from "./AddEvent/AddEvent";
 import Button from "./Elements/Button";
 import EventCard from "./EventCard";
 import MyEventsCard from "./MyEvents";
@@ -47,7 +46,7 @@ const Events = ({ theme }) => {
         return res.json();
       })
       .then((events) => {
-        console.log(events);
+        localStorage.setItem('myEvents',JSON.stringify(events))
         setMyEvents(events);
         console.log(myEvents);
         // setTotalPage(events.total);

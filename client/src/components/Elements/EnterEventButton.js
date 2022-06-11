@@ -5,9 +5,9 @@ import Bus from '../../utils/Bus';
 
 export default function EnterEvent({ refId, id, result }) {
     let reference_id = refId;
+    const history = useHistory();
     window.flash = (message, type = 'success') =>
         Bus.emit('flash', { message, type });
-    const history = useHistory();
     const redirect = () => {
         history.push('/event/' + reference_id, { result });
         fetch('http://localhost:8000/api/server/join', {

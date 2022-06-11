@@ -57,8 +57,11 @@ const AddEvent = ({ closeAddEvent, addPop }) => {
 			.then((res) => res.json())
 			.then((result) => {
 				setRefId(result.reference_id);
+				
 				// console.log(refId,result.reference_id);
-
+				var newEvennt=JSON.parse(localStorage.getItem('myEvents'));
+				newEvennt.unshift(result);
+				localStorage.setItem('myEvents',JSON.stringify(newEvennt))
 				history.push('/event/' + result.reference_id, { result });
 				window.flash('Event  Created!', 'success');
 			})
